@@ -9,6 +9,15 @@ export default {
       title: "Album Art",
     },
     {
+      name: "playId",
+      type: "slug",
+      title: "Play ID",
+      options: {
+        source: "title",
+        slugify: (_) => crypto.randomUUID(),
+      },
+    },
+    {
       name: "artist",
       type: "string",
       title: "Artist Name",
