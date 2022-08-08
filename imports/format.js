@@ -18,7 +18,10 @@ const createAlbum = (title, artist) => {
     // There's no easy way to determin if an album is a single or not
     // so just check if either identifier contains the word 7"
     isSingle: title?.includes('7"') || artist?.includes('7"'),
-    playId: createPlayId(title),
+    playId: {
+      _type: "slug",
+      current: createPlayId(title),
+    },
   };
 };
 
@@ -42,6 +45,22 @@ csv()
         workingCopy = record.replace("(LP, Album)", "");
       }
 
+      if (record.includes("(LP, Album, RE)")) {
+        workingCopy = record.replace("(LP, Album, RE)", "");
+      }
+
+      if (record.includes("(LP, Album, Promo)")) {
+        workingCopy = record.replace("(LP, Album, Promo)", "");
+      }
+
+      if (record.includes("(LP, Album, RE, Promo)")) {
+        workingCopy = record.replace("(LP, Album, RE, Promo)", "");
+      }
+
+      if (record.includes("(LP)")) {
+        workingCopy = record.replace("(LP)", "");
+      }
+
       if (record.includes("(LP, Comp)")) {
         workingCopy = record.replace("(LP, Comp)", "");
       }
@@ -55,8 +74,9 @@ csv()
     console.log("Creating album entries...");
     console.log("--------------------------------");
     let albums = records.map((record) => {
-      const [artist, title] = record.split(" - ");
-      return createAlbum(title, artist);
+      // Split the record into artist and title, treating any further matches as part of the title
+      const [artist, ...title] = record.split(" - ");
+      return createAlbum(title.join(" - "), artist);
     });
 
     console.log(`CREATED ALBUMS: ${albums.length}`);
